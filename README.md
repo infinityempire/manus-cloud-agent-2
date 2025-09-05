@@ -1,2 +1,3 @@
-# manus-cloud-agent-2
-manus cloud agent free
+# Manus Cloud Agent
+
+בוט טלגרם בענן שמריץ Pipelines בגיטלאב, מפרסם Release בגיטהאב, ועונה עם AI.
