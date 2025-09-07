@@ -1,0 +1,37 @@
+issue_comment:
+types: [created]
+contents: write
+pull-requests: write
+actions: read
+apply:
+if: contains(github.event.comment.body, '/apply')
+runs-on: ubuntu-latest
+env:
+PERSONAL_GITHUB_TOKEN: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
+GITHUB_TOKEN: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
+
+steps:
+- name: Checkout
+uses: actions/checkout@v4
+with:
+fetch-depth: 0
+
+- name: Extract script after /apply
+id: extract
+shell: bash
+run: |
+set -euo pipefail
+body=$(jq -r '.comment.body' < "$GITHUB_EVENT_PATH")
+script=$(printf "%s\n" "$body" | awk 'f{print} /\/apply/{f=1}')
+script=$(printf "%s\n" "$script" | sed '1d')
+echo "SCRIPT<<'EOF'" >> $GITHUB_OUTPUT
+echo "$script" >> $GITHUB_OUTPUT
+echo "EOF" >> $GITHUB_OUTPUT
+
+- name: Run /apply payload
+shell: bash
+run: |
+set -euo pipefail
+export GH_TOKEN="${GITHUB_TOKEN}"
+bash -lc "${{ steps.extract.outputs.SCRIPT }}"
+
