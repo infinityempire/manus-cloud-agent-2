@@ -1,0 +1,33 @@
+name: Post-Deploy Smoke
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["Deploy to Railway"]
+    types: [completed]
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - name: Verify required secret
+        run: |
+          if [ -z "${{ secrets.RAILWAY_PUBLIC_URL }}" ]; then
+            echo "❌ Missing secret: RAILWAY_PUBLIC_URL"
+            exit 1
+          fi
+
+      - name: Smoke /health
+        run: |
+          set -euo pipefail
+          URL="${{ secrets.RAILWAY_PUBLIC_URL }}"
+          echo "GET ${URL}/health"
+          curl -fsS "${URL}/health" && echo -e "\n✅ /health OK"
+
+      - name: Smoke /status
+        run: |
+          set -euo pipefail
+          URL="${{ secrets.RAILWAY_PUBLIC_URL }}"
+          echo "GET ${URL}/status"
+          curl -fsS "${URL}/status" && echo -e "\n✅ /status OK"

@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.env
+.env.*
+.git
+.gitignore
+out/
+dist/
+build/
+*.apk
+*.aab
+.DS_Store
