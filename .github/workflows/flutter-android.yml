@@ -20,26 +20,32 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
           
-      - uses: subosito/flutter-action@v2
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
         with:
-          flutter-version: 'stable'
+          flutter-version: '3.24.5'
+          channel: 'stable'
           
-      - name: Backup existing files
-        working-directory: client_flutter
-        run: |
-          mkdir -p ../backup
-          cp -r lib ../backup/ || true
-          cp pubspec.yaml ../backup/ || true
-          
-      - name: Flutter create
-        working-directory: client_flutter
-        run: flutter create . --org com.manus.client
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
         
-      - name: Restore custom files
+      - name: Prepare Flutter project
         working-directory: client_flutter
         run: |
-          cp -r ../backup/lib . || true
-          cp ../backup/pubspec.yaml . || true
+          # Backup existing files
+          mkdir -p ../backup
+          cp -r lib ../backup/ 2>/dev/null || true
+          cp pubspec.yaml ../backup/ 2>/dev/null || true
+          
+          # Remove existing Flutter project files to avoid conflicts
+          rm -rf android ios linux macos web windows test .dart_tool .packages pubspec.lock
+          
+          # Create new Flutter project
+          flutter create . --org com.manus.client --project-name manus_client
+          
+          # Restore custom files
+          cp -r ../backup/lib . 2>/dev/null || true
+          cp ../backup/pubspec.yaml . 2>/dev/null || true
           
       - name: Install dependencies
         working-directory: client_flutter
