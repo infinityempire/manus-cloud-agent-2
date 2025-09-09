@@ -1,0 +1,49 @@
+name: Deploy to Railway
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy FastAPI service to Railway
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Node (for Railway CLI)
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Railway CLI
+        run: npm i -g @railway/cli
+
+      - name: Show repo status
+        run: |
+          ls -la
+          echo "Python files:"
+          git ls-files '*.py' || true
+
+      # Railway will detect Python + Procfile automatically, or use Dockerfile if present
+      - name: Deploy to Railway
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          RAILWAY_ENVIRONMENT: ${{ secrets.RAILWAY_ENVIRONMENT || '' }}
+          RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID || '' }}
+        run: |
+          set -euo pipefail
+          railway --version
+          # Prefer explicit env/project if provided; otherwise auto-create/auto-link
+          ARGS=()
+          [ -n "${RAILWAY_ENVIRONMENT}" ] && ARGS+=(--environment "${RAILWAY_ENVIRONMENT}")
+          [ -n "${RAILWAY_PROJECT_ID}" ] && ARGS+=(--project "${RAILWAY_PROJECT_ID}")
+          # --yes = non-interactive; --detach returns immediately after successful deploy
+          railway up --yes --detach "${ARGS[@]}"

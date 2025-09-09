@@ -1,0 +1,51 @@
+name: build-and-artifacts
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install zip (for packaging)
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y zip
+
+      - name: Install production deps
+        run: pip install -r requirements.txt
+
+      - name: Install dev deps
+        run: |
+          if [ -f requirements-dev.txt ]; then
+            pip install -r requirements-dev.txt
+          else
+            pip install pytest requests
+          fi
+
+      - name: Run tests
+        run: pytest -q
+
+      # Package the app dir into a file named app.apk (zip of manus2/)
+      - name: Package artifact
+        run: |
+          mkdir -p out
+          (cd manus2 && zip -r ../out/app.apk .)
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app
+          path: out/app.apk
+          if-no-files-found: error
+          retention-days: 7

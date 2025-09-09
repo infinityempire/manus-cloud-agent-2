@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.env
+.env.*
+
+# Git
+.git
+.gitignore
+
+# Build / Artifacts
+out/
+dist/
+build/
+*.apk
+*.aab
+
+# OS
+.DS_Store
