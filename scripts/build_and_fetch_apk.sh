@@ -5,15 +5,15 @@
 set -euo pipefail
 OWNER=${OWNER:?set OWNER}
 REPO=${REPO:?set REPO}
-WF="Android APK (Debug)"
+WF_FILE=".github/workflows/android-apk.yml"
 
 # Trigger workflow (workflow_dispatch) on provided ref (default: ci/apk)
 REF=${REF:-ci/apk}
-gh workflow run "$WF" -R "$OWNER/$REPO" --ref "$REF"
+gh workflow run "$WF_FILE" -R "$OWNER/$REPO" --ref "$REF"
 
 # Get latest run id for this workflow
 sleep 2
-RUN_ID=$(gh run list -R "$OWNER/$REPO" --workflow "$WF" --limit 1 --json databaseId -q '.[0].databaseId')
+RUN_ID=$(gh run list -R "$OWNER/$REPO" --workflow "$WF_FILE" --limit 1 --json databaseId -q '.[0].databaseId')
 echo "[info] Watching run $RUN_ID"
 
 gh run watch "$RUN_ID" -R "$OWNER/$REPO"
