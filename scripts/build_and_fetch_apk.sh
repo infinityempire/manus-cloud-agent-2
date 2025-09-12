@@ -7,8 +7,9 @@ OWNER=${OWNER:?set OWNER}
 REPO=${REPO:?set REPO}
 WF="Android APK (Debug)"
 
-# Trigger workflow (workflow_dispatch)
-gh workflow run "$WF" -R "$OWNER/$REPO"
+# Trigger workflow (workflow_dispatch) on provided ref (default: ci/apk)
+REF=${REF:-ci/apk}
+gh workflow run "$WF" -R "$OWNER/$REPO" --ref "$REF"
 
 # Get latest run id for this workflow
 sleep 2
