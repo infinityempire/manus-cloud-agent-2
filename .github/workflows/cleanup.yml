@@ -1,0 +1,33 @@
+name: CI Cleanup (stale runs & artifacts)
+
+on:
+  schedule:
+    - cron: '17 3 * * *'  # daily at 03:17 UTC
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install GitHub CLI
+        uses: cli/gh-action@v2
+
+      - name: Delete stale runs (>30 days) and expired artifacts
+        env:
+          OWNER: ${{ github.repository_owner }}
+          REPO: ${{ github.event.repository.name }}
+        run: |
+          set -euo pipefail
+          CUTOFF=$(date -u -d "30 days ago" +%s)
+          # delete old completed runs
+          gh run list -R "$OWNER/$REPO" --status completed --limit 200 --json databaseId,createdAt \
+            -q ".[] | select((.createdAt|fromdateiso8601) < $CUTOFF) | .databaseId" \
+            | xargs -r -n1 -I{} gh run delete -R "$OWNER/$REPO" {}
+          # delete expired artifacts
+          gh api -X GET "/repos/$OWNER/$REPO/actions/artifacts?per_page=100" \
+            -q ".artifacts[] | select(.expired==true) | .id" \
+            | xargs -r -n1 -I{} gh api -X DELETE "/repos/$OWNER/$REPO/actions/artifacts/{}"
