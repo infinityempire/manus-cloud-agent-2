@@ -28,6 +28,7 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
+          cache: 'gradle'
 
       - name: Install Gradle 8.7 and generate wrapper
         uses: gradle/gradle-build-action@v3
