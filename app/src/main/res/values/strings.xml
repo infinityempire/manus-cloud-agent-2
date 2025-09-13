@@ -1,3 +1,10 @@
 <resources>
-    <string name="app_name">Infinity Agent</string>
+    <string name="app_name">Manus Agent</string>
+    <string name="dashboard_title">Dashboard</string>
+    <string name="settings_title">Settings</string>
+    <string name="test_network">Test Network</string>
+    <string name="network_status_idle">Idle</string>
+    <string name="network_status_ok">Network OK</string>
+    <string name="network_status_fail">Network error</string>
+    <string name="enable_notifications">Enable notifications</string>
 </resources>
