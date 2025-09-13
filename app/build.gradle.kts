@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.infinityempire.manus"
+    namespace = "com.infinityempire.infinityagent"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.infinityempire.manus"
+        applicationId = "com.infinityempire.infinityagent"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
@@ -26,7 +26,8 @@ android {
             )
         }
         debug {
-            // Debug defaults
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-debug"
         }
     }
 
