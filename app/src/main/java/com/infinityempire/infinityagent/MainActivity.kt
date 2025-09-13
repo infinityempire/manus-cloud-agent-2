@@ -1,8 +1,8 @@
-package com.infinityempire.manus
+package com.infinityempire.infinityagent
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.infinityempire.manus.databinding.ActivityMainBinding
+import com.infinityempire.infinityagent.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
