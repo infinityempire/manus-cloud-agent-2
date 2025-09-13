@@ -43,18 +43,19 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
 
       - name: Assemble Debug APK
-        run: ./gradlew assembleDebug --stacktrace --no-daemon
+        run: ./gradlew :app:clean :app:assembleDebug --stacktrace --no-daemon
 
       - name: Locate APK
         id: locate
         shell: bash
         run: |
-          APK=$(find . -type f -path "*/build/outputs/apk/*/*debug*.apk" -print -quit)
-          if [ -z "$APK" ]; then
+          APK="app/build/outputs/apk/debug/*.apk"
+          if ls $APK 1> /dev/null 2>&1; then
+            echo "apk_path=$APK" >> "$GITHUB_OUTPUT"
+          else
             echo "No debug APK found" >&2
             exit 1
           fi
-          echo "apk_path=$APK" >> "$GITHUB_OUTPUT"
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
